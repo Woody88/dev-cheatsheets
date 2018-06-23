@@ -2,7 +2,17 @@
 .psci_modules
 bower_components
 node_modules
+/.psc-package/
 
 # Generated files
 .psci
 output
+/generated-docs/
+/.pulp-cache/
+/.psc*
+/.purs*
+/.psa*
+
+
+
+
