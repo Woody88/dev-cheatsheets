@@ -3,6 +3,8 @@
   "set": "psc-0.12.0",
   "source": "",
   "depends": [
+    "simple-json",
+    "foreign",
     "routing",
     "halogen",
     "psci-support",
