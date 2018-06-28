@@ -1,20 +1,24 @@
 module App 
-    ( module App.AppMonad
+    ( module App.Monad
     , appUI
     , Query (..)
     )
     where
   
+
 import Prelude
 
+import App.Monad (AppEnv, App, runAppM)
+import App.Navigation (navigate)
+import Data.Either.Nested (Either2)
+import Data.Functor.Coproduct.Nested (Coproduct2)
 import Data.Maybe (Maybe(..))
 import Halogen as H
+import Halogen.Component.ChildPath as CP
 import Halogen.HTML as HH
-import Halogen.HTML.Events as HE
+import Page.Cheatsheet as PC
+import Page.Home as PH
 import Router (Route(..))
-import App.AppMonad (AppEnv, App, runAppM)
-import App.Navigation (navigate)
-
 
 type State =
   { currentPage :: Route
@@ -24,32 +28,33 @@ data Query a
     = Goto Route a
     | LocationChange Route a
 
+type ChildQuery = Coproduct2 PH.Query PC.Query
+type ChildSlot = Either2 Unit Unit 
+
 initApp :: Route -> State 
 initApp route  = { currentPage: route }
 
 appUI :: H.Component HH.HTML Query Route Unit App
 appUI = 
-    H.component
+    H.parentComponent
         { initialState: initApp
         , render
         , eval
         , receiver: const Nothing 
         }
   where
-    render :: State -> H.ComponentHTML Query
+    render :: State -> H.ParentHTML Query ChildQuery ChildSlot App
     render st =
         HH.div_ 
-            [ HH.h1_ [ HH.text (show $ st.currentPage) ] 
-            , viewPage st.currentPage
-            ]
+            [ viewPage st.currentPage ]
 
-    viewPage :: Route -> H.ComponentHTML Query
+    viewPage :: Route -> H.ParentHTML Query ChildQuery ChildSlot App
     viewPage path = case path of
-        Home -> HH.div_ [ HH.button [ HE.onClick (HE.input_ $ Goto Page) ] [ HH.text "Not Found" ] ]
-        Page -> HH.div_ [ HH.p_ [] ]
-        _      -> HH.p_ [] 
+        Home ->  HH.slot' CP.cp1 unit PH.component unit absurd
+        Page -> HH.slot' CP.cp2 unit PC.component unit absurd
+        _    -> HH.p_ [ HH.text "Bad Route" ] 
     
-    eval :: Query ~> H.ComponentDSL State Query Unit App
+    eval :: Query ~> H.ParentDSL State Query ChildQuery ChildSlot Unit App
     eval (Goto route next) = do
       navigate route
       pure next
