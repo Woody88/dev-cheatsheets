@@ -2,8 +2,6 @@ module Main where
 
 import Prelude
 
-import Control.Coroutine as CR
-import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Aff (launchAff_)
 import Effect.Class (liftEffect)
@@ -13,28 +11,22 @@ import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
 import Router as R
 import Routing.PushState (makeInterface)
-import Simple.JSON (write)
-
+import App as App
 
 main :: Effect Unit
 main = HA.runHalogenAff $ do
-  nav  <- liftEffect $ makeInterface
-  
-  body <- HA.awaitBody
+  nav      <- liftEffect $ makeInterface
   location <- liftEffect $ nav.locationState
-  void $ liftEffect $ log location.path        --- Debug purpose
-  
-  app <- runUI R.router location.path body
-  
-  _ <- liftEffect $ nav.listen $ browserChangeHandler (app.query)
+  body     <- HA.awaitBody
+  let appUI           = H.hoist (App.runAppM { navInterface: nav, state: 1 }) App.appUI
+      currentRoute = R.parseRoute location.path
 
-  app.subscribe $ CR.consumer \(R.RouteChanged path) -> do
-    liftEffect $ nav.pushState (write {}) path
-    pure Nothing
-  
+  app <- runUI appUI currentRoute body
+
+  void $ liftEffect $ nav.listen $ browserRouteChangeHandler (app.query)
+
   where                                                        
-    browserChangeHandler qry location = do
+    browserRouteChangeHandler appQuery location = do
       log location.path
-      launchAff_ $ qry $ H.action $ (R.LocationChange location.path)
+      launchAff_ $ appQuery $ H.action $ (App.LocationChange $ R.parseRoute location.path)
     
-      
