@@ -1,19 +1,22 @@
 module Page.Home where
   
 import Prelude
+import Router
 
 import App.Monad (App)
+import App.Navigation (navigate)
 import Data.Maybe (Maybe(..))
 import Halogen (ClassName(..), AttrName(..))
 import Halogen as H
+import Halogen.HTML (i)
 import Halogen.HTML as HH
+import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
-
 
 type State = Int
 
 data Query a 
-    = Query Unit a
+    = Goto Route a
 
 type Slot = H.Slot Query Void
 
@@ -57,13 +60,16 @@ component =
             ]
 
     recentlyUpdatedItems item = 
-        HH.a [ HP.class_ (ClassName "uk-link-heading")]
+        HH.a [ HP.class_ (ClassName "uk-link-heading"), HE.onClick (HE.input_ (Goto $ Cheatsheet item)) ]
             [ HH.div [ HP.class_ (ClassName "uk-card uk-card-small uk-card-default uk-padding-small recent-items uk-text-middle") ]
-                [ HH.h3_ [ HH.text item ] ]
+                [ HH.h3_ [ HH.text $ show item ] ]
             ]
-            
+
     eval :: Query ~> H.HalogenM State Query () Void App
-    eval (Query _ next) = do
+    eval (Goto route next) = do
+      navigate route
       pure next
 
-items = [ "Purescript", "Haskell", "Salesforce", "Bash" ]
+items :: Array Page
+items = [ Purescript, Haskell, Salesforce, Bash ]
+

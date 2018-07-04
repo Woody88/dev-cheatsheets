@@ -16,6 +16,7 @@ import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Core (ClassName(..))
 import Halogen.HTML.Properties as HP
+import Page 
 import Router (Route(..))
 
 type State =
@@ -52,8 +53,9 @@ appUI =
 
     viewPage :: Route -> H.ComponentHTML Query Slots App
     viewPage path = case path of
-        Home -> HH.slot _homePage unit homeComponent unit absurd
-        _    -> HH.slot _notfoundPage unit notfoundComponent unit absurd
+        Home           -> HH.slot _homePage unit homeComponent unit absurd
+        (Cheatsheet p) -> HH.slot _cheatsheetPage unit cheatsheetComponent {name: show p} absurd
+        otherwise      -> HH.slot _notfoundPage unit notfoundComponent unit absurd
     
     eval :: Query ~> H.HalogenM State Query Slots Void App
     eval (Goto route next) = do

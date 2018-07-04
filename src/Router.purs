@@ -1,4 +1,10 @@
-module Router where
+module Router 
+    ( Route(..)
+    , Page(..)
+    , parseRoute
+    , routing
+    )
+    where
   
 import Prelude
 
@@ -11,13 +17,25 @@ import Routing.Match (Match, lit, root, end)
 
 data Route
     = Home
-    | Page
+    | Cheatsheet Page
     | NotFound
-    
+
+data Page 
+    = Purescript
+    | Haskell 
+    | Salesforce
+    | Bash 
+
+instance showPages :: Show Page where
+  show (Purescript) = "purescript"
+  show (Haskell)    = "haskell"
+  show (Salesforce) = "salesforce"
+  show (Bash)       = "bash"
+      
 instance showRoutes :: Show Route where
-  show (Home)     = "home"
-  show (Page)     = "page"
-  show (NotFound) = "404"
+  show (Home)        = "home"
+  show (Cheatsheet p) = show p
+  show (NotFound)    = "404"
 
 parseRoute :: String -> Route
 parseRoute = parseRouteEither <<< match routing <<< stripPrefixBackslash
@@ -28,12 +46,19 @@ parseRoute = parseRouteEither <<< match routing <<< stripPrefixBackslash
 routing :: Match Route
 routing = oneOf
     [ home
-    , page
+    , purescript
+    , haskell
+    , salesforce
+    , bash
     , pure NotFound
     ]
     where 
           home = Home <$ root <* end
-          page = Page <$ lit "page" <* end
+          purescript = (Cheatsheet Purescript) <$ lit (show Purescript) <* end
+          haskell = (Cheatsheet Haskell) <$ lit (show Haskell) <* end
+          salesforce = (Cheatsheet Salesforce) <$ lit (show Salesforce) <* end
+          bash = (Cheatsheet Bash) <$ lit (show Bash) <* end
+        
 
 
       
