@@ -1,6 +1,20 @@
 body {
+    height: 100vh; 
     background: #f1f3f5;
     font-family: -apple-system,BlinkMacSystemFont,segoe ui,roboto,oxygen,ubuntu,cantarell,fira sans,droid sans,helvetica neue,sans-serif;
     color: #346;
     line-height: 1.6;
+}
+
+.cheatsheet-search {
+    background: #FFFF;
+}
+
+.recent-items {
+    background: linear-gradient(15deg,#745fb5,#9a6dbb);
+    color: #FFFF;
+}
+
+.recent-items > h3 {
+    color: inherit;
 }

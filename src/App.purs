@@ -10,11 +10,13 @@ import Prelude
 
 import App.Monad (AppEnv, App, runAppM)
 import App.Navigation (navigate)
+import App.Slot (Slots, _homePage, _navbar, _notfoundPage, homeComponent, navbarComponent, notfoundComponent)
 import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
+import Halogen.HTML.Core (ClassName(..))
+import Halogen.HTML.Properties as HP
 import Router (Route(..))
-import Page (PageSlots, _homePage, homeComponent, _notfoundPage, notfoundComponent)
 
 type State =
   { currentPage :: Route
@@ -38,22 +40,25 @@ appUI =
         , finalizer: Nothing
         }
   where
-    render :: State -> H.ComponentHTML Query PageSlots App
+    render :: State -> H.ComponentHTML Query Slots App
     render st =
-        HH.div_ 
-            [ viewPage st.currentPage ]
+        HH.div [ HP.class_ (ClassName "uk-container") ]
+            [ navBar
+            , viewPage st.currentPage 
+            ]
+            
+    navBar :: H.ComponentHTML Query Slots App
+    navBar = HH.slot _navbar unit navbarComponent unit absurd
 
-    viewPage :: Route -> H.ComponentHTML Query PageSlots App
+    viewPage :: Route -> H.ComponentHTML Query Slots App
     viewPage path = case path of
         Home -> HH.slot _homePage unit homeComponent unit absurd
         _    -> HH.slot _notfoundPage unit notfoundComponent unit absurd
     
-    eval :: Query ~> H.HalogenM State Query PageSlots Void App
+    eval :: Query ~> H.HalogenM State Query Slots Void App
     eval (Goto route next) = do
       navigate route
       pure next
     eval (LocationChange route next) = do
       void $  H.modify ( _ { currentPage = route } )
       pure next
-
-    

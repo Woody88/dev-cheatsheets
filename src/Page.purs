@@ -6,9 +6,10 @@ import Data.Symbol (SProxy(..))
 import Page.Home as Home
 import Page.NotFound as NotFound
 
-type PageSlots =
+type PageSlots r =
   ( homePage       :: Home.Slot Unit
   , notfoundPage   :: NotFound.Slot Unit
+  | r
   )
 
 _homePage     = SProxy :: SProxy "homePage"
