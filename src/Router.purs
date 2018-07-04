@@ -26,6 +26,9 @@ data Page
     | Salesforce
     | Bash 
 
+derive instance routeEq :: Eq Route
+derive instance pageEq :: Eq Page
+
 instance showPages :: Show Page where
   show (Purescript) = "purescript"
   show (Haskell)    = "haskell"
@@ -33,7 +36,7 @@ instance showPages :: Show Page where
   show (Bash)       = "bash"
       
 instance showRoutes :: Show Route where
-  show (Home)        = "home"
+  show (Home)        = "/"
   show (Cheatsheet p) = show p
   show (NotFound)    = "404"
 

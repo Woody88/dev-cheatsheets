@@ -1,10 +1,6 @@
 module Page.Home where
   
 import Prelude
-import Router
-
-import App.Monad (App)
-import App.Navigation (navigate)
 import Data.Maybe (Maybe(..))
 import Halogen (ClassName(..), AttrName(..))
 import Halogen as H
@@ -12,6 +8,9 @@ import Halogen.HTML (i)
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
+import Router
+import App.Monad (App)
+import App.Navigation (navigate)
 
 type State = Int
 

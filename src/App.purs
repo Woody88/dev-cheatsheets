@@ -20,7 +20,8 @@ import Page
 import Router (Route(..))
 
 type State =
-  { currentPage :: Route
+  { currentPage  :: Route
+  , previousPage :: Route
   } 
 
 data Query a 
@@ -28,7 +29,7 @@ data Query a
     | LocationChange Route a
 
 initApp :: Route -> State 
-initApp route  = { currentPage: route }
+initApp route  = { currentPage: route, previousPage: route }
 
 appUI :: H.Component HH.HTML Query Route Void App
 appUI = 
@@ -44,12 +45,12 @@ appUI =
     render :: State -> H.ComponentHTML Query Slots App
     render st =
         HH.div [ HP.class_ (ClassName "uk-container") ]
-            [ navBar
+            [ navBar st.previousPage
             , viewPage st.currentPage 
             ]
             
-    navBar :: H.ComponentHTML Query Slots App
-    navBar = HH.slot _navbar unit navbarComponent unit absurd
+    navBar :: Route -> H.ComponentHTML Query Slots App
+    navBar prevRoute = HH.slot _navbar unit navbarComponent prevRoute absurd
 
     viewPage :: Route -> H.ComponentHTML Query Slots App
     viewPage path = case path of
@@ -59,8 +60,9 @@ appUI =
     
     eval :: Query ~> H.HalogenM State Query Slots Void App
     eval (Goto route next) = do
+      void $  H.modify (\s ->  s { previousPage = s.currentPage} )
       navigate route
       pure next
     eval (LocationChange route next) = do
-      void $  H.modify ( _ { currentPage = route } )
+      void $  H.modify (\s ->  s { currentPage = route, previousPage = s.currentPage} )
       pure next
