@@ -6,17 +6,20 @@ module App
     where
   
 
+
 import Prelude
 
 import App.Monad (AppEnv, App, runAppM)
 import App.Navigation (navigate)
 import App.Slot (Slots, _homePage, _navbar, _notfoundPage, homeComponent, navbarComponent, notfoundComponent)
 import Data.Maybe (Maybe(..))
+import Effect.Console (log)
+import Effect.Class (liftEffect)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Core (ClassName(..))
 import Halogen.HTML.Properties as HP
-import Page 
+import Page
 import Router (Route(..))
 
 type State =
@@ -57,7 +60,7 @@ appUI =
         Home           -> HH.slot _homePage unit homeComponent unit absurd
         (Cheatsheet p) -> HH.slot _cheatsheetPage unit cheatsheetComponent {name: show p} absurd
         otherwise      -> HH.slot _notfoundPage unit notfoundComponent unit absurd
-    
+        
     eval :: Query ~> H.HalogenM State Query Slots Void App
     eval (Goto route next) = do
       void $  H.modify (\s ->  s { previousPage = s.currentPage} )
@@ -66,3 +69,4 @@ appUI =
     eval (LocationChange route next) = do
       void $  H.modify (\s ->  s { currentPage = route, previousPage = s.currentPage} )
       pure next
+

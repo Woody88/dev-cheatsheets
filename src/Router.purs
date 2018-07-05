@@ -8,6 +8,7 @@ module Router
   
 import Prelude
 
+import Data.String (toLower)
 import Data.Either (either)
 import Data.Foldable (oneOf)
 import Data.Maybe (fromMaybe)
@@ -30,10 +31,10 @@ derive instance routeEq :: Eq Route
 derive instance pageEq :: Eq Page
 
 instance showPages :: Show Page where
-  show (Purescript) = "purescript"
-  show (Haskell)    = "haskell"
-  show (Salesforce) = "salesforce"
-  show (Bash)       = "bash"
+  show (Purescript) = "Purescript"
+  show (Haskell)    = "Haskell"
+  show (Salesforce) = "Salesforce"
+  show (Bash)       = "Bash"
       
 instance showRoutes :: Show Route where
   show (Home)        = "/"
@@ -57,10 +58,11 @@ routing = oneOf
     ]
     where 
           home = Home <$ root <* end
-          purescript = (Cheatsheet Purescript) <$ lit (show Purescript) <* end
-          haskell = (Cheatsheet Haskell) <$ lit (show Haskell) <* end
-          salesforce = (Cheatsheet Salesforce) <$ lit (show Salesforce) <* end
-          bash = (Cheatsheet Bash) <$ lit (show Bash) <* end
+          purescript = (Cheatsheet Purescript) <$ lit (showLowerCase Purescript) <* end
+          haskell = (Cheatsheet Haskell) <$ lit (showLowerCase Haskell) <* end
+          salesforce = (Cheatsheet Salesforce) <$ lit (showLowerCase Salesforce) <* end
+          bash = (Cheatsheet Bash) <$ lit (showLowerCase Bash) <* end
+          showLowerCase = toLower <<< show  
         
 
 
