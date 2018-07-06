@@ -14,7 +14,9 @@
     "purescript-simple-json": "^4.0.0",
     "purescript-halogen": "https://github.com/slamdata/purescript-halogen.git#2451e7192335d1c26cf94da3a99f5677c4d85795",
     "purescript-node-fs": "^5.0.0",
-    "purescript-html-parser-halogen": "^0.3.0"
+    "purescript-html-parser-halogen": "^0.3.0",
+    "purescript-affjax": "^6.0.0",
+    "purescript-base64-codec": "^0.9.2"
   },
   "devDependencies": {
     "purescript-psci-support": "^4.0.0"

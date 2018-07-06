@@ -5,10 +5,7 @@ module App
     )
     where
   
-
-
 import Prelude
-
 import App.Monad (AppEnv, App, runAppM)
 import App.Navigation (navigate)
 import App.Slot (Slots, _homePage, _navbar, _notfoundPage, homeComponent, navbarComponent, notfoundComponent)
