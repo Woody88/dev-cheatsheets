@@ -55,7 +55,7 @@ appUI =
     viewPage :: Route -> H.ComponentHTML Query Slots App
     viewPage path = case path of
         Home           -> HH.slot _homePage unit homeComponent unit absurd
-        (Cheatsheet p) -> HH.slot _cheatsheetPage unit cheatsheetComponent {name: show p} absurd
+        (Cheatsheet p) -> HH.slot _cheatsheetPage unit cheatsheetComponent {name: show p, cheatdata: []} absurd
         otherwise      -> HH.slot _notfoundPage unit notfoundComponent unit absurd
         
     eval :: Query ~> H.HalogenM State Query Slots Void App

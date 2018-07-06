@@ -1,7 +1,7 @@
 body {
     height: 100vh; 
     background: #f1f3f5;
-    font-family: -apple-system,BlinkMacSystemFont,segoe ui,roboto,oxygen,ubuntu,cantarell,fira sans,droid sans,helvetica neue,sans-serif;
+    font-family: roboto,apple-system,BlinkMacSystemFont,segoe ui,oxygen,ubuntu,cantarell,fira sans,droid sans,helvetica neue,sans-serif;
     color: #346;
     line-height: 1.6;
 }
@@ -17,4 +17,26 @@ body {
 
 .recent-items > h3 {
     color: inherit;
+}
+
+.cheatsheet-header{
+    font-weight: 200;
+    font-family: roboto;
+    font-size: 48px;
+    letter-spacing: 0.5px;
+}
+
+.cheatsheet-title {
+    color: #9eaab6;
+}
+
+.cheatsheet-topic {
+    color: #745fb5;
+}
+
+.cheatsheet-topic > span:before {
+    background: linear-gradient(to right,rgba(116,95,181,0.2),transparent 80%);
+}
+.cheatsheet-topic > span:after {
+    background: linear-gradient(to right,rgba(116,95,181,0.2),transparent 80%);
 }

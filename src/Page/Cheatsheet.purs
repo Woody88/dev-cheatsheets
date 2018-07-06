@@ -1,29 +1,33 @@
 module Page.Cheatsheet where
 
 
+
 import Prelude
-import Control.Monad (liftM1)
+
+import App.Monad (App)
 import Data.Argonaut.Core as J
 import Data.Either (Either(..))
 import Data.HTTP.Method (Method(..))
-import Network.HTTP.Affjax as AX
-import Network.HTTP.Affjax.Response as AXRes
-import App.Monad (App)
 import Data.Maybe (Maybe(..), fromMaybe)
+import Text.Base64 (decode64)
+import Data.Traversable (sequence, traverse)
 import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Class.Console (logShow, log)
-import Halogen (ClassName(..), HalogenQ(..), lift)
+import Halogen (AttrName(..), ClassName(..))
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Html.Parser.Halogen as PH
+import Network.HTTP.Affjax as AX
+import Network.HTTP.Affjax.Response as AXRes
 import Github.Types
 
 type State = 
     { name :: String 
+    , cheatdata :: Array CheatData
     }
 
 type Input = State 
@@ -47,47 +51,60 @@ component =
   where
     render :: State -> H.ComponentHTML Query () App
     render st = do
-        HH.div [ HP.class_ (ClassName "uk-text-center") ]
-            [ HH.h3 [ HP.class_ (ClassName "uk-heading-primary") ] 
-                [ HH.text st.name 
-                , HH.span [ HP.class_ (ClassName "uk-text-muted") ] 
-                    [ HH.text " Cheatsheet" ]  
+        HH.div []
+            [ HH.div [ HP.class_ (ClassName "uk-margin-xlarge-bottom uk-text-center") ]
+                [ HH.h3 [ HP.class_ (ClassName "uk-heading-primary cheatsheet-header") ] 
+                    [ HH.text st.name 
+                    , HH.span [ HP.class_ (ClassName "cheatsheet-title") ] 
+                        [ HH.text " Cheatsheet" ]  
+                    ]
                 ]
-            -- , HH.div_ ( map renderCheatsheet data_)
+            , HH.div [HP.class_ (ClassName "uk-child-width-1-3@m"), HP.attr (AttrName "uk-grid") ""] 
+                ( map renderCheatsheet st.cheatdata)
             ]
 
-    -- renderCheatsheet :: CheatData -> H.ComponentHTML Query () App
-    -- renderCheatsheet cheatdata = do
-    --     HH.div_ 
-    --         [ HH.h4 [ HP.class_ (ClassName "uk-heading-line") ] 
-    --             [ HH.span_ [ HH.text cheatdata.title ]
-    --             , PH.render $ cheatdata.html
-    --             ]
-    --         ]
+    renderCheatsheet :: CheatData -> H.ComponentHTML Query () App
+    renderCheatsheet cheatdata = do
+        HH.div []
+            [ HH.h4 [ HP.class_ (ClassName "uk-text-capitalize uk-heading-line uk-text-left cheatsheet-topic") ] 
+                [ HH.span_ [ HH.text cheatdata.name ]
+                ]
+            , PH.render cheatdata.content
+            ]
 
     eval :: Query ~> H.HalogenM State Query () Void App
     eval (Initializer next) = do
       oldState <- H.get
       liftEffect $ log "oldState"
       liftEffect $ logShow oldState
-      H.liftAff $ getCheatsheets $ GitDir oldState.name
+      datas <- H.liftAff $ getCheatsheets $ GitDir oldState.name
+      H.modify_ (_ { cheatdata = datas })
       pure next
     eval (HandleInput state next) = do
       oldState <- H.get
       when (oldState /= state) $ H.put state
       pure next
 
-repo = "https://api.github.com/repos/Woody88/dev-cheatsheets/contents/"
+repo = "https://api.github.com/repos/Woody88/dev-cheatsheets/contents/Cheatsheets/"
 
-getCheatsheets :: GitDir -> Aff Unit
+getCheatsheets :: GitDir -> Aff (Array CheatData)
 getCheatsheets dir = do
    datasMaybe <- loadCheatsheetFiles dir
-   let dataList = map loadFile $ fromMaybe [] datasMaybe
+   
+   let m = fromMaybe [] datasMaybe
+   dataList <- traverse loadFile m
+   let sequencedDataList = sequence dataList
+   parsedData <- liftEffect $ traverse parseContent (fromMaybe [] sequencedDataList)
    liftEffect $ log "getCheatsheets"
    liftEffect $ logShow datasMaybe
-   --liftEffect $ logShow dataList
-   pure unit
+   liftEffect $ logShow sequencedDataList
+   pure parsedData
    
+parseContent :: CheatData -> Effect CheatData
+parseContent data_ = do
+  md <- markdownRender (decode64 data_.content) markdown
+  pure $ data_ { content = md }
+
 loadFile :: GitData -> Aff (Maybe CheatData)
 loadFile json = do
     res <- AX.affjax AXRes.json (AX.defaultRequest { url = json.url, method = Left GET })

@@ -36,7 +36,7 @@ component =
     where 
         render :: State -> H.ComponentHTML Query () App
         render state = 
-            HH.nav [ HP.class_ (ClassName "uk-navbar-container uk-navbar-transparent uk-margin"), HP.attr (AttrName "uk-navbar") "" ] 
+            HH.nav [ HP.class_ (ClassName "uk-text-bold uk-navbar-container uk-navbar-transparent uk-margin"), HP.attr (AttrName "uk-navbar") "" ] 
                 [ navbarLeft state
                 , navbarCenter
                 ]
