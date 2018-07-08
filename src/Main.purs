@@ -19,7 +19,7 @@ main = HA.runHalogenAff $ do
   location <- liftEffect $ nav.locationState
   body     <- HA.awaitBody
   let appUI           = H.hoist (App.runAppM { navInterface: nav, state: 1 }) App.appUI
-      currentRoute = R.parseRoute location.path
+      currentRoute = R.Home
 
   app <- runUI appUI currentRoute body
 
@@ -28,5 +28,5 @@ main = HA.runHalogenAff $ do
   where                                                        
     browserRouteChangeHandler appQuery location = do
       log location.path
-      launchAff_ $ appQuery $ H.action $ (App.LocationChange $ R.parseRoute location.path)
+      launchAff_ $ appQuery $ H.action $ (App.LocationChange $ R.parseRoute location.hash)
     

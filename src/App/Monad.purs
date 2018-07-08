@@ -36,6 +36,6 @@ instance navigateDSLAppM :: NavigateDSL App where
   navigate route = AppM do
     env <- ask
     log ("state : " <> show env.state)
-    liftEffect $ env.navInterface.pushState (write {}) (toLower $ show route)
+    liftEffect $ env.navInterface.pushState (write {}) ("#" <> (toLower $ show route))
 
     
