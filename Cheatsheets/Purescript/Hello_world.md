@@ -8,5 +8,5 @@ main = log "Hello World!"
 ```
 
 ```bash
-λ> "Hello World!"
+>>> "Hello World!"
 ```
