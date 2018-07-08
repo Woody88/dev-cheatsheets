@@ -47,14 +47,7 @@ instance showRoutes :: Show Route where
 parseRoute :: String -> Route
 parseRoute = parseRouteEither <<< match routing <<< stripPrefixBackslash
     where parseRouteEither = either (const NotFound) identity
-          stripPrefixBackslash "/" = ""
           stripPrefixBackslash path = fromMaybe (show NotFound) $ stripPrefix (Pattern "#") path
-
-maybeRouting :: Match (Maybe Route)
-maybeRouting = oneOf
-    [ Just <$> routing
-    , pure Nothing
-    ]
 
 routing :: Match Route
 routing = oneOf
