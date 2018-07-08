@@ -14,6 +14,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "parcel-bundler": "^1.9.2"
+    "highlightjs": "^9.10.0",
+    "remarkable": "^1.7.1"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.9.4",
+    "parcel-plugin-markdown": "^0.3.1"
   }
 }

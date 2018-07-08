@@ -6,6 +6,7 @@ import App.Navigation (class NavigateDSL)
 import Control.Monad.Reader.Trans (ReaderT, runReaderT, ask)
 import Data.String (toLower)
 import Effect.Aff (Aff)
+import Effect.Aff.Class (class MonadAff)
 import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Class.Console (log)
 import Routing.PushState (PushStateInterface)
@@ -29,6 +30,7 @@ derive newtype instance applicativeApp :: Applicative App
 derive newtype instance bindApp :: Bind App
 derive newtype instance monadApp :: Monad App
 derive newtype instance appMonadEffect :: MonadEffect App
+derive newtype instance appAff :: MonadAff App
 
 instance navigateDSLAppM :: NavigateDSL App where
   navigate route = AppM do
