@@ -3,7 +3,6 @@ module Router
     , Page(..)
     , parseRoute
     , routing
-    , maybeRouting
     )
     where
   
