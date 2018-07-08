@@ -4,5 +4,5 @@ main = putStrLn "Hello World!"
 ```
 
 ```bash
-\λ\> "Hello World!"
+"Hello World!"
 ```
