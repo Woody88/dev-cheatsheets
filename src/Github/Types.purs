@@ -21,3 +21,6 @@ parseGitData s = readJSON s
 
 parseCheatData :: String -> Either (NonEmptyList ForeignError) CheatData 
 parseCheatData s = readJSON s
+
+repo :: String
+repo = "https://api.github.com/repos/Woody88/dev-cheatsheets/contents/Cheatsheets/"

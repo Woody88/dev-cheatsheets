@@ -1,15 +1,15 @@
 module Page.Cheatsheet where
 
-
-
+import Github.Types
 import Prelude
 
 import App.Monad (App)
+import Data.String
+import Data.String.Pattern (Pattern)
 import Data.Argonaut.Core as J
 import Data.Either (Either(..))
 import Data.HTTP.Method (Method(..))
 import Data.Maybe (Maybe(..), fromMaybe)
-import Text.Base64 (decode64)
 import Data.Traversable (sequence, traverse)
 import Effect (Effect)
 import Effect.Aff (Aff)
@@ -23,7 +23,7 @@ import Halogen.HTML.Properties as HP
 import Html.Parser.Halogen as PH
 import Network.HTTP.Affjax as AX
 import Network.HTTP.Affjax.Response as AXRes
-import Github.Types
+import Text.Base64 (decode64)
 
 type State = 
     { name :: String 
@@ -60,12 +60,14 @@ component =
                     ]
                 ]
             , HH.div [HP.class_ (ClassName "uk-child-width-1-3@m"), HP.attr (AttrName "uk-grid") ""] 
-                ( map renderCheatsheet st.cheatdata)
+                (renderCheats st.cheatdata)
             ]
+            where renderCheats [] = [ HH.h2 [ HP.class_ (ClassName "uk-heading-bullet") ] [ HH.text "Under Construction!" ] ]
+                  renderCheats cheats = map renderCheatsheet cheats
 
     renderCheatsheet :: CheatData -> H.ComponentHTML Query () App
     renderCheatsheet cheatdata = do
-        HH.div []
+        HH.div [ HP.class_ (ClassName "cheatsheet-code-snippet")]
             [ HH.h4 [ HP.class_ (ClassName "uk-text-capitalize uk-heading-line uk-text-left cheatsheet-topic") ] 
                 [ HH.span_ [ HH.text cheatdata.name ]
                 ]
@@ -85,14 +87,19 @@ component =
       when (oldState /= state) $ H.put state
       pure next
 
-repo = "https://api.github.com/repos/Woody88/dev-cheatsheets/contents/Cheatsheets/"
+formatCheatsheetTitle :: String -> String
+formatCheatsheetTitle = replaceUnderscore <<< replaceMdExt
+    where 
+        replaceMdExt = replace (Pattern ".md") (Replacement "")
+        replaceUnderscore = replace (Pattern "_") (Replacement " ")
+
 
 getCheatsheets :: GitDir -> Aff (Array CheatData)
 getCheatsheets dir = do
    datasMaybe <- loadCheatsheetFiles dir
    
    let m = fromMaybe [] datasMaybe
-   dataList <- traverse loadFile m
+   dataList <- traverse loadFile    m
    let sequencedDataList = sequence dataList
    parsedData <- liftEffect $ traverse parseContent (fromMaybe [] sequencedDataList)
    liftEffect $ log "getCheatsheets"
@@ -103,7 +110,7 @@ getCheatsheets dir = do
 parseContent :: CheatData -> Effect CheatData
 parseContent data_ = do
   md <- markdownRender (decode64 data_.content) markdown
-  pure $ data_ { content = md }
+  pure $ data_ { content = md, name = formatCheatsheetTitle data_.name }
 
 loadFile :: GitData -> Aff (Maybe CheatData)
 loadFile json = do

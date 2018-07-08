@@ -54,7 +54,7 @@ component =
             HH.div [ HP.class_ (ClassName "uk-navbar-left") ]
                 [ HH.ul [ HP.class_ (ClassName "uk-navbar-nav") ]
                     [ HH.li_
-                        [ HH.a [ HP.class_ (ClassName "uk-icon-link"), HP.attr (AttrName "uk-icon") "icon: arrow-left; ratio: 2", HE.onClick (HE.input_ $ Goto prevRoute) ]
+                        [ HH.a [ HP.class_ (ClassName "uk-icon-link back-button"), HP.attr (AttrName "uk-icon") "icon: arrow-left; ratio: 2", HE.onClick (HE.input_ $ Goto prevRoute) ]
                             []
                         ]
                     ]
