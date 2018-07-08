@@ -60,7 +60,7 @@ component =
 
     recentlyUpdatedItems item = 
         HH.a [ HP.class_ (ClassName "uk-link-heading"), HE.onClick (HE.input_ (Goto $ Cheatsheet item)) ]
-            [ HH.div [ HP.class_ (ClassName "uk-card uk-card-small uk-card-default uk-padding-small recent-items uk-text-middle") ]
+            [ HH.div [ HP.class_ (ClassName "uk-margin uk-card uk-card-small uk-card-default uk-padding-small recent-items uk-text-middle") ]
                 [ HH.h3_ [ HH.text $ show item ] ]
             ]
 
