@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build",
+    "build": "pulp browserify -O > index.js && parcel build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
