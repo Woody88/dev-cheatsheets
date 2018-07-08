@@ -16,6 +16,9 @@ type CheatData =
     , content :: String
     }
 
+initCheatData :: CheatData
+initCheatData = {name: "", content: ""}
+
 parseGitData :: String -> Either (NonEmptyList ForeignError) GitDatas 
 parseGitData s = readJSON s
 
