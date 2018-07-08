@@ -3,6 +3,7 @@
 bower_components
 node_modules
 /.psc-package/
+/dist
 
 # Generated files
 .psci
