@@ -3,6 +3,7 @@ module Router
     , Page(..)
     , parseRoute
     , routing
+    , maybeRouting
     )
     where
   
@@ -11,9 +12,10 @@ import Prelude
 import Data.String (toLower)
 import Data.Either (either)
 import Data.Foldable (oneOf)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, Maybe(..))
 import Data.String (stripPrefix, Pattern(..))
-import Routing (match)
+import Routing.Hash (matches)
+import Routing 
 import Routing.Match (Match, lit, root, end)
 
 data Route
@@ -41,11 +43,18 @@ instance showRoutes :: Show Route where
   show (Cheatsheet p) = show p
   show (NotFound)    = "404"
 
+
 parseRoute :: String -> Route
 parseRoute = parseRouteEither <<< match routing <<< stripPrefixBackslash
     where parseRouteEither = either (const NotFound) identity
-          stripPrefixBackslash "/" = "/"
-          stripPrefixBackslash path = fromMaybe (show NotFound) $ stripPrefix (Pattern "/") path
+          stripPrefixBackslash "/" = ""
+          stripPrefixBackslash path = fromMaybe (show NotFound) $ stripPrefix (Pattern "#") path
+
+maybeRouting :: Match (Maybe Route)
+maybeRouting = oneOf
+    [ Just <$> routing
+    , pure Nothing
+    ]
 
 routing :: Match Route
 routing = oneOf
